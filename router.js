@@ -6,7 +6,8 @@ router.get('/', (req, res) => {
     res.render('home-guest')
 });
 
-router.get('/about', userController.home)
+router.get('/about', userController.home);
+router.post('/register', userController.register);
 
 
 
