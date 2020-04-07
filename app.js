@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000;
 
 
 
@@ -18,10 +17,6 @@ app.use('/', router)
 
 // module.exports = app;
 
-module.exports = {
-    app: app,
-    port: port
-}
-
+module.exports = app;
 
 
