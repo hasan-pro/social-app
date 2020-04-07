@@ -1,3 +1,4 @@
+const userCollection = require('../db').collection('users');
 const validator = require('validator')
 
 const User = function (data) {

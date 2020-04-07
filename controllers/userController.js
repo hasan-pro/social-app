@@ -1,4 +1,4 @@
-let User = require('../model/User')
+const User = require('../model/User')
 
 exports.login = function() {
 
