@@ -2,9 +2,11 @@ const User = require('../model/User')
 
 exports.login = function(req, res) {
     let user = new User(req.body)
-    user.login(result => {
-        res.send(result);
-    });
+    user.login().then(result => {
+        res.send(result)
+    }).catch(e => {
+        res.send(e)
+    })
 }
 
 
@@ -14,8 +16,8 @@ exports.logout = function() {
 
 
 exports.register = function(req, res) {
-    let user = new User(req.body);
-    user.register();
+    let user = new User(req.body)
+    user.register()
 
     if (user.errors.length) {
         res.send(user.errors)
