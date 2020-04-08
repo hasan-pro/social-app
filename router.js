@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 
 router.get('/about', userController.home);
 router.post('/register', userController.register);
-
+router.post('/login', userController.login)
 
 
 module.exports = router;
