@@ -4,7 +4,9 @@ exports.login = function(req, res) {
     let user = new User(req.body)
     user.login().then(result => {
         req.session.user = {favColor: 'blue', username: user.data.username}
-        res.send(result)
+        req.session.save(() => {
+            res.redirect('/')
+        })
     }).catch(e => {
         res.send(e)
     })
@@ -12,8 +14,9 @@ exports.login = function(req, res) {
 
 
 exports.logout = function(req, res) {
-    req.session.destroy()
-    res.send('You are now logged out.')
+    req.session.destroy(() => {
+        res.redirect('/')
+    })
 }
 
 
