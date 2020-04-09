@@ -11,8 +11,9 @@ exports.login = function(req, res) {
 }
 
 
-exports.logout = function() {
-
+exports.logout = function(req, res) {
+    req.session.destroy()
+    res.send('You are now logged out.')
 }
 
 
@@ -30,7 +31,7 @@ exports.register = function(req, res) {
 
 exports.home = function(req, res) {
     if (req.session.user) {
-        res.send('Welcome to the accual application.')
+        res.render('home-dashboard', {username: req.session.user.username})
     } else {
         res.render('home-guest')
     }
