@@ -20,7 +20,7 @@ User.prototype.cleanUp = function() {
     }
 }
 
-User.prototype.validate = function() {
+User.prototype.validate = async function() {
     if (this.data.username === "") {this.errors.push('You must provide a username.')}
     if (this.data.username !== "" && !validator.isAlphanumeric(this.data.username)) {this.errors.push('Username can only contain letters and numbers.')}
     
@@ -33,6 +33,17 @@ User.prototype.validate = function() {
     if (this.data.password.length > 50) {this.errors.push('Password cannot exceed 50 characters.')}
     if (this.data.password.length > 0 && this.data.password.length < 12) {this.errors.push('Password must be at least 12 characters.')}
 
+    // If only username is valid then check to see if it's already taken
+    if (this.data.username.length > 2 && this.data.username.length < 31 && validator.isAlphanumeric(this.data.username)) {
+        let usernameExists = await userCollection.findOne({username: this.data.username})
+        if (usernameExists) {this.errors.push('That username is already taken.')}
+    }
+
+     // If only email is valid then check to see if it's already taken
+     if (validator.isEmail(this.data.email)) {
+        let emailExists = await userCollection.findOne({email: this.data.email})
+        if (emailExists) {this.errors.push('That email is already being used.')}
+    }
 }
 
 User.prototype.login = function() {

@@ -9,8 +9,6 @@ exports.login = function(req, res) {
         })
     }).catch(e => {
         req.flash('errors', e)
-        // for example it's goint to add masseage to 
-        // req.session.user.flash.errors = [e]
         req.session.save(() => {
             res.redirect('/')
         })
@@ -30,7 +28,12 @@ exports.register = function(req, res) {
     user.register()
 
     if (user.errors.length) {
-        res.send(user.errors)
+        user.errors.forEach(error => {
+            req.flash('regErrors', error);
+        })
+        req.session.save(() => {
+            res.redirect('/')
+        })
     } else {
         res.send('Congrats!')
     }
@@ -41,7 +44,7 @@ exports.home = function(req, res) {
     if (req.session.user) {
         res.render('home-dashboard', {username: req.session.user.username})
     } else {
-        res.render('home-guest', {errors: req.flash('error')})
+        res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors')})
     }
 }
 
