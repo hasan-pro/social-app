@@ -16,6 +16,10 @@ let sessionOptions = session({
 
 app.use(sessionOptions)
 app.use(flash())
+app.use((req, res, next) => {
+    res.locals.user = req.session.user
+    next()
+})
 
 // custom module import
 const router = require('./router.js')
@@ -29,6 +33,6 @@ app.set('view engine', 'ejs')
 
 app.use('/', router)
 
-module.exports = app;
+module.exports = app
 
 
