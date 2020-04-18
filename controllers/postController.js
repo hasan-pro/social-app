@@ -15,7 +15,7 @@ exports.create = function(req, res) {
 
 exports.viewSingle = async function(req, res) {
     try {
-        let post = await Post.findSingleByid(req.params.id)
+        let post = await Post.findSingleByid(req.params.id, req.visitorId)
         res.render('single-post-screen', {post: post})
     } catch {
         res.render('../views/404.ejs')

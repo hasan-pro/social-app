@@ -45,7 +45,7 @@ Post.prototype.create = function() {
     })
 }
 
-Post.reusablePostQuery = function(uniqueOperation) {
+Post.reusablePostQuery = function(uniqueOperation, visitorId) {
     return new Promise( async (resolve, reject) => {
         let aggOperation = uniqueOperation.concat([
             {$lookup: {from: 'users', localField: 'author', foreignField: '_id', as: 'authorDocument'}},
@@ -53,6 +53,7 @@ Post.reusablePostQuery = function(uniqueOperation) {
                 title: 1,
                 body: 1,
                 createdDate: 1,
+                authorId: "$author",
                 author: {$arrayElemAt: ['$authorDocument', 0]}
             }},
         ])
@@ -60,6 +61,8 @@ Post.reusablePostQuery = function(uniqueOperation) {
 
         // clean up author property in each post object
         posts = posts.map((post) => {
+            post.isVisitorOwner = post.authorId.equals(visitorId)
+
             post.author = {
                 username: post.author.username,
                 avatar: new User(post.author, true).avatar
@@ -71,7 +74,7 @@ Post.reusablePostQuery = function(uniqueOperation) {
     })
 }
 
-Post.findSingleByid = function(id) {
+Post.findSingleByid = function(id, visitorId) {
     return new Promise( async (resolve, reject) => {
         if (typeof(id) !== 'string' || !ObjectId.isValid(id)) {
             reject()
@@ -80,10 +83,9 @@ Post.findSingleByid = function(id) {
         
         let posts = await Post.reusablePostQuery([
             {$match: {_id: new ObjectId(id)}}
-        ])
+        ], visitorId)
 
         if (posts.length) {
-            console.log(posts[0])
             resolve(posts[0])
         } else {
             reject()
