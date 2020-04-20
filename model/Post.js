@@ -34,8 +34,8 @@ Post.prototype.create = function() {
 
         if (!this.errors.length) {
             // Save post into database
-            postsCollection.insertOne(this.data).then(() => {
-                resolve()
+            postsCollection.insertOne(this.data).then((info) => {
+                resolve(info.ops[0]._id)
             }).catch(() => {
                 this.errors.push('Please try again leter.')
                 reject(this.errors)
@@ -45,37 +45,6 @@ Post.prototype.create = function() {
         }
     })
 }
-
-// Post.prototype.update = function() {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       let post = await Post.findSingleByid(this.requestedPostId, this.userid)
-//       if (post.isVisitorOwner) {
-//         // acually update the db
-//         let status = await this.actuallyUpdate()
-//         resolve(status)
-//       } else {
-//         reject()
-//       }
-//     } catch {
-//       reject()
-//     }
-//   })
-// }
-//
-// Post.actuallyUpdate = function () {
-//   return new Promise(async (reject, resolve) => {
-//     this.cleanUP()
-//     this.validate()
-//
-//     if (!this.errors.length) {
-//       await postsCollection.findOneAndUpdate({_id: new ObjectId(this.requestedPostId)}, {$set: {title: this.data.title, body: this.data.body}})
-//       resolve('success')
-//     } else {
-//       resolve('failure')
-//     }
-//   })
-// }
 
 
 Post.prototype.update = function() {
