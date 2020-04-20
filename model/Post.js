@@ -2,10 +2,11 @@ const postsCollection = require('../db').db().collection('posts')
 const ObjectId = require('mongodb').ObjectId
 const User = require('./User')
 
-let Post = function(data, userid) {
+let Post = function(data, userid, requestedPostId) {
     this.data = data
     this.errors = []
     this.userid = userid
+    this.requestedPostId = requestedPostId
 }
 
 Post.prototype.cleanUP = function() {
@@ -45,6 +46,68 @@ Post.prototype.create = function() {
     })
 }
 
+// Post.prototype.update = function() {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       let post = await Post.findSingleByid(this.requestedPostId, this.userid)
+//       if (post.isVisitorOwner) {
+//         // acually update the db
+//         let status = await this.actuallyUpdate()
+//         resolve(status)
+//       } else {
+//         reject()
+//       }
+//     } catch {
+//       reject()
+//     }
+//   })
+// }
+//
+// Post.actuallyUpdate = function () {
+//   return new Promise(async (reject, resolve) => {
+//     this.cleanUP()
+//     this.validate()
+//
+//     if (!this.errors.length) {
+//       await postsCollection.findOneAndUpdate({_id: new ObjectId(this.requestedPostId)}, {$set: {title: this.data.title, body: this.data.body}})
+//       resolve('success')
+//     } else {
+//       resolve('failure')
+//     }
+//   })
+// }
+
+
+Post.prototype.update = function() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let post = await Post.findSingleByid(this.requestedPostId, this.userid)
+      if (post.isVisitorOwner) {
+        // actually update the db
+        let status = await this.actuallyUpdate()
+        resolve(status)
+      } else {
+        reject()
+      }
+    } catch {
+      reject()
+    }
+  })
+}
+
+Post.prototype.actuallyUpdate = function() {
+  return new Promise(async (resolve, reject) => {
+    this.cleanUP()
+    this.validate()
+    if (!this.errors.length) {
+      await postsCollection.findOneAndUpdate({_id: new ObjectId(this.requestedPostId)}, {$set: {title: this.data.title, body: this.data.body}})
+      resolve("success")
+    } else {
+      resolve("failure")
+    }
+  })
+}
+
 Post.reusablePostQuery = function(uniqueOperation, visitorId) {
     return new Promise( async (resolve, reject) => {
         let aggOperation = uniqueOperation.concat([
@@ -78,9 +141,9 @@ Post.findSingleByid = function(id, visitorId) {
     return new Promise( async (resolve, reject) => {
         if (typeof(id) !== 'string' || !ObjectId.isValid(id)) {
             reject()
-            return 
+            return
         }
-        
+
         let posts = await Post.reusablePostQuery([
             {$match: {_id: new ObjectId(id)}}
         ], visitorId)

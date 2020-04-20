@@ -57,7 +57,7 @@ exports.home = function(req, res) {
     if (req.session.user) {
         res.render('home-dashboard')
     } else {
-        res.render('home-guest', {errors: req.flash('errors'), regErrors: req.flash('regErrors')})
+        res.render('home-guest', {regErrors: req.flash('regErrors')})
     }
 }
 
@@ -81,8 +81,6 @@ exports.profilePostsScreen = function(req, res) {
     }).catch(() => {
         res.render('404')
     })
-    
-    
+
+
 }
-
-
