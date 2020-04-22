@@ -2,6 +2,7 @@ const express = require('express')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 const flash = require('connect-flash')
+const markdown = require('marked')
 const app = express();
 
 
@@ -17,6 +18,10 @@ let sessionOptions = session({
 app.use(sessionOptions)
 app.use(flash())
 app.use((req, res, next) => {
+    // Make our markdown function available from withing ejs template
+    res.locals.filterUserHTML = function(content) {
+        return markdown(content)
+    }
     // Make all error and success flash messages available from all templates
     res.locals.errors = req.flash('errors')
     res.locals.success = req.flash('success')
